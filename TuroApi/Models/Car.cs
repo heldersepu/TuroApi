@@ -1,4 +1,6 @@
-﻿namespace TuroApi.Models
+﻿using System;
+
+namespace TuroApi.Models
 {
     public class Car
     {
@@ -7,5 +9,6 @@
         public int year;
         public int tripsTaken;
         public double dailyPrice;
+        public DateTime createdTime;
     }
 }

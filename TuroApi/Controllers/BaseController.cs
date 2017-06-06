@@ -53,10 +53,17 @@ namespace TuroApi.Controllers
                     model = item.vehicle.model,
                     year = (int)item.vehicle.year,
                     tripsTaken = (int)item.renterTripsTaken,
-                    dailyPrice = (double)item.rate.averageDailyPrice
+                    dailyPrice = (double)item.rate.averageDailyPrice,
+                    createdTime = FromUnixTime((double)item.vehicle.listingCreatedTime)
                 });
             }
             return cars;
+        }
+
+        public static DateTime FromUnixTime(double unixTime)
+        {
+            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            return epoch.AddMilliseconds(unixTime);
         }
     }
 }
