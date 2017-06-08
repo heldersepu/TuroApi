@@ -10,5 +10,15 @@ namespace TuroApi.Models
         public int tripsTaken;
         public double dailyPrice;
         public DateTime createdTime;
+
+        public double tripsPerMonth
+        {
+            get => 30 * tripsTaken / daysSinceCreated;
+        }
+
+        private double daysSinceCreated
+        {
+            get => (DateTime.Now - createdTime).TotalDays;
+        }
     }
 }
