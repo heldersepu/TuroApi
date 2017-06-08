@@ -13,12 +13,12 @@ namespace TuroApi.Models
 
         public double tripsPerMonth
         {
-            get => 30 * tripsTaken / daysSinceCreated;
+            get { return 30 * tripsTaken / daysSinceCreated; }
         }
 
         private double daysSinceCreated
         {
-            get => (DateTime.Now - createdTime).TotalDays;
+            get { return (DateTime.Now - createdTime).TotalDays; }
         }
     }
 }
