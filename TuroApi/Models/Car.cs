@@ -4,6 +4,7 @@ namespace TuroApi.Models
 {
     public class Car
     {
+        public long id;
         public string make;
         public string model;
         public int year;

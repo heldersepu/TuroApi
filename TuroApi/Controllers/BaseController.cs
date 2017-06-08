@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using TuroApi.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace TuroApi.Controllers
 {
@@ -33,7 +34,7 @@ namespace TuroApi.Controllers
                 AddParameter("endTime", date.AddDays(7).ToString("H:m"));
 
                 AddParameter("category", "ALL");
-                AddParameter("maximumDistanceInMiles", "300");
+                AddParameter("maximumDistanceInMiles", "30");
                 AddParameter("sortType", "RELEVANCE");
 
                 AddParameter("isMapSearch", "false");
@@ -44,25 +45,41 @@ namespace TuroApi.Controllers
             }
         }
 
-        protected List<Car> TuroSearch(GeoPoint location, int items, string make = null, string model = null)
+        protected async Task<List<Car>> TuroSearch(GeoPoint location, int items, string make = null, string model = null)
         {
+            var restTasks = new List<Task<IRestResponse>>();
             var client = new RestClient(DOMAIN);
-            var request = new TuroRequest(location, items, make, model);
-            var resp = client.Execute(request);
-            dynamic data = JsonConvert.DeserializeObject(resp.Content);
+
+            double[,] array = {{0,0},{0.2,0},{0,0.2},{-0.2,0},{0,-0.2}};
+            for (int i = 0; i < 5; i++)
+            {
+                var loc = new GeoPoint(location.Latitude + array[i,0], location.Longitude + array[i,1]);
+                var request = new TuroRequest(loc, items, make, model);
+                restTasks.Add(client.ExecuteTaskAsync(request));
+            }
 
             var cars = new List<Car>();
-            foreach (var item in data.list)
+            foreach (var restTask in restTasks)
             {
-                cars.Add(new Car
+                var resp = await restTask;
+                dynamic data = JsonConvert.DeserializeObject(resp.Content);
+                foreach (var item in data.list)
                 {
-                    make = item.vehicle.make,
-                    model = item.vehicle.model,
-                    year = (int)item.vehicle.year,
-                    tripsTaken = (int)item.renterTripsTaken,
-                    dailyPrice = (double)item.rate.averageDailyPrice,
-                    createdTime = FromUnixTime((double)item.vehicle.listingCreatedTime)
-                });
+                    long id = (long)item.vehicle.id;
+                    if (!cars.Any(x => x.id == id))
+                    {
+                        cars.Add(new Car
+                        {
+                            id = id,
+                            make = item.vehicle.make,
+                            model = item.vehicle.model,
+                            year = (int)item.vehicle.year,
+                            tripsTaken = (int)item.renterTripsTaken,
+                            dailyPrice = (double)item.rate.averageDailyPrice,
+                            createdTime = FromUnixTime((double)item.vehicle.listingCreatedTime)
+                        });
+                    }
+                }
             }
             return cars;
         }

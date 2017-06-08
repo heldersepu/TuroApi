@@ -7,6 +7,13 @@ namespace TuroApi.Models
     [TypeConverter(typeof(GeoPointConverter))]
     public class GeoPoint
     {
+        public GeoPoint() { }
+        public GeoPoint(double lat, double lon)
+        {
+            Latitude = lat;
+            Longitude = lon;
+        }
+
         public double Latitude { get; set; }
         public double Longitude { get; set; }
 
