@@ -7,9 +7,9 @@ namespace TuroApi.Controllers
 {
     public class StatsController : BaseController
     {
-        public async Task<IHttpActionResult> Get(GeoPoint location, int items = 200)
+        public async Task<IHttpActionResult> Get(GeoPoint location, int items = 200, string make = null, string model = null)
         {
-            var cars = await TuroSearch(location, items);
+            var cars = await TuroSearch(location, items, make, model);
             return Ok(new CarStats {
                 total = cars.Count,
                 year = cars.GroupBy(x => x.year).ToDict(),
