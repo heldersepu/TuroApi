@@ -15,7 +15,7 @@ namespace TuroApi.Controllers
 
         private class TuroRequest : RestRequest
         {
-            public TuroRequest(GeoPoint location, int items, string make, string model) : base("api/search", Method.GET)
+            public TuroRequest(GeoPoint location, int items, string make, string model, string sortType) : base("api/search", Method.GET)
             {
                 AddParameter("itemsPerPage", items);
                 AddParameter("latitude", location.Latitude);
@@ -35,7 +35,7 @@ namespace TuroApi.Controllers
 
                 AddParameter("category", "ALL");
                 AddParameter("maximumDistanceInMiles", "30");
-                AddParameter("sortType", "RELEVANCE");
+                AddParameter("sortType", sortType);
 
                 AddParameter("isMapSearch", "false");
                 AddParameter("defaultZoomLevel", "14");
@@ -45,17 +45,21 @@ namespace TuroApi.Controllers
             }
         }
 
-        protected async Task<List<Car>> TuroSearch(GeoPoint location, int items, string make = null, string model = null)
+        protected async Task<List<Car>> TuroSearch(GeoPoint location, string make = null, string model = null)
         {
             var restTasks = new List<Task<IRestResponse>>();
             var client = new RestClient(DOMAIN);
 
+            string[] sorts = { "RELEVANCE", "PRICE_LOW", "PRICE_HIGH" };
             double[,] array = {{0,0},{0.2,0},{0,0.2},{-0.2,0},{0,-0.2}};
             for (int i = 0; i < 5; i++)
             {
-                var loc = new GeoPoint(location.Latitude + array[i,0], location.Longitude + array[i,1]);
-                var request = new TuroRequest(loc, items, make, model);
-                restTasks.Add(client.ExecuteTaskAsync(request));
+                var loc = location.Add(array[i, 0], array[i, 1]);
+                foreach (var sort in sorts)
+                {
+                    var request = new TuroRequest(loc, 400, make, model, sort);
+                    restTasks.Add(client.ExecuteTaskAsync(request));
+                }
             }
 
             var cars = new List<Car>();

@@ -1,16 +1,22 @@
 ﻿using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Web.Http;
+using Swashbuckle.Swagger.Annotations;
 using TuroApi.Models;
 
 namespace TuroApi.Controllers
 {
     public class SearchController : BaseController
     {
-        // GET: api/Search
-        public async Task<IHttpActionResult> GetByLocation(GeoPoint location, int items = 200, string make = null, string model = null)
+        /// <summary>
+        /// Get all cars in a given location
+        /// </summary>
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(List<Car>))]
+        public async Task<IHttpActionResult> GetByLocation([FromUri] Query q)
         {
-            var cars = await TuroSearch(location, items, make, model);
+            var cars = await TuroSearch(q.location, q.make, q.model);
             return Ok(cars.OrderByDescending(c => c.tripsPerMonth));
         }
     }

@@ -14,6 +14,11 @@ namespace TuroApi.Models
             Longitude = lon;
         }
 
+        public GeoPoint Add(double lat, double lon)
+        {
+            return new GeoPoint(Latitude + lat, Longitude + lon);
+        }
+
         public double Latitude { get; set; }
         public double Longitude { get; set; }
 

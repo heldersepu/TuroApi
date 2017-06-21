@@ -1,7 +1,11 @@
+using System;
+using System.Reflection;
 using System.Web.Http;
+using System.Xml.XPath;
+using Swashbuckle.Application;
+using Swashbuckle.Swagger;
 using WebActivatorEx;
 using TuroApi;
-using Swashbuckle.Application;
 
 [assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
@@ -9,11 +13,11 @@ namespace TuroApi
 {
     public class SwaggerConfig
     {
+        public static Assembly ThisAssembly { get { return typeof(SwaggerConfig).Assembly; } }
+
         public static void Register()
         {
-            var thisAssembly = typeof(SwaggerConfig).Assembly;
-
-            GlobalConfiguration.Configuration 
+            GlobalConfiguration.Configuration
                 .EnableSwagger(c =>
                     {
                         // By default, the service root url is inferred from the request used to access the docs.
@@ -57,7 +61,7 @@ namespace TuroApi
                         //c.BasicAuth("basic")
                         //    .Description("Basic HTTP Authentication");
                         //
-						// NOTE: You must also configure 'EnableApiKeySupport' below in the SwaggerUI section
+                        // NOTE: You must also configure 'EnableApiKeySupport' below in the SwaggerUI section
                         //c.ApiKey("apiKey")
                         //    .Description("API Key Authentication")
                         //    .Name("apiKey")
@@ -97,7 +101,7 @@ namespace TuroApi
                         // those comments into the generated docs and UI. You can enable this by providing the path to one or
                         // more Xml comment files.
                         //
-                        //c.IncludeXmlComments(GetXmlCommentsPath());
+                        c.IncludeXmlComments(embeddedXmlComments);
 
                         // Swashbuckle makes a best attempt at generating Swagger compliant JSON schemas for the various types
                         // exposed in your API. However, there may be occasions when more control of the output is needed.
@@ -115,7 +119,7 @@ namespace TuroApi
                         // If you want to post-modify "complex" Schemas once they've been generated, across the board or for a
                         // specific type, you can wire up one or more Schema filters.
                         //
-                        //c.SchemaFilter<ApplySchemaVendorExtensions>();
+                        c.SchemaFilter<ApplySchemaVendorExtensions>();
 
                         // In a Swagger 2.0 document, complex types are typically declared globally and referenced by unique
                         // Schema Id. By default, Swashbuckle does NOT use the full type name in Schema Ids. In most cases, this
@@ -127,18 +131,18 @@ namespace TuroApi
 
                         // Alternatively, you can provide your own custom strategy for inferring SchemaId's for
                         // describing "complex" types in your API.
-                        //  
+                        //
                         //c.SchemaId(t => t.FullName.Contains('`') ? t.FullName.Substring(0, t.FullName.IndexOf('`')) : t.FullName);
 
                         // Set this flag to omit schema property descriptions for any type properties decorated with the
-                        // Obsolete attribute 
+                        // Obsolete attribute
                         //c.IgnoreObsoleteProperties();
 
                         // In accordance with the built in JsonSerializer, Swashbuckle will, by default, describe enums as integers.
                         // You can change the serializer behavior by configuring the StringToEnumConverter globally or for a given
                         // enum type. Swashbuckle will honor this change out-of-the-box. However, if you use a different
                         // approach to serialize enums as strings, you can also force Swashbuckle to describe them as strings.
-                        // 
+                        //
                         //c.DescribeAllEnumsAsStrings();
 
                         // Similar to Schema filters, Swashbuckle also supports Operation and Document filters:
@@ -164,7 +168,7 @@ namespace TuroApi
                         // In contrast to WebApi, Swagger 2.0 does not include the query string component when mapping a URL
                         // to an action. As a result, Swashbuckle will raise an exception if it encounters multiple actions
                         // with the same path (sans query string) and HTTP method. You can workaround this by providing a
-                        // custom strategy to pick a winner or merge the descriptions for the purposes of the Swagger docs 
+                        // custom strategy to pick a winner or merge the descriptions for the purposes of the Swagger docs
                         //
                         //c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
 
@@ -237,10 +241,43 @@ namespace TuroApi
                         //);
 
                         // If your API supports ApiKey, you can override the default values.
-                        // "apiKeyIn" can either be "query" or "header"                                                
+                        // "apiKeyIn" can either be "query" or "header"
                         //
                         //c.EnableApiKeySupport("apiKey", "header");
                     });
+        }
+
+        private static XPathDocument embeddedXmlComments()
+        {
+            return new XPathDocument(ThisAssembly.GetManifestResourceStream("TuroApi.TuroApi.XML"));
+        }
+
+        private class ApplySchemaVendorExtensions : ISchemaFilter
+        {
+            public void Apply(Schema schema, SchemaRegistry schemaRegistry, Type type)
+            {
+                if (schema.properties != null)
+                {
+                    foreach (var p in schema.properties)
+                    {
+                        if (p.Value.@type == "string")
+                        {
+                            switch (p.Key)
+                            {
+                                case "make":
+                                    p.Value.example = "Tesla";
+                                    break;
+                                case "model":
+                                    p.Value.example = "Model S";
+                                    break;
+                                case "location":
+                                    p.Value.example = "26.16,-80.20";
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

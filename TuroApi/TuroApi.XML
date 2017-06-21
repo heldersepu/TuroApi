@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TuroApi</name>
+    </assembly>
+    <members>
+        <member name="M:TuroApi.Controllers.SearchController.GetByLocation(TuroApi.Models.Query)">
+            <summary>
+            Get all cars in a given location
+            </summary>
+        </member>
+        <member name="M:TuroApi.Controllers.StatsController.Get(TuroApi.Models.Query)">
+            <summary>
+            Get car statistics in a given location
+            </summary>
+        </member>
+        <member name="T:TuroApi.Models.Query">
+            <summary>Query object</summary>
+        </member>
+        <member name="P:TuroApi.Models.Query.location">
+            <summary>SoFL= 26.16,-80.20</summary>
+        </member>
+        <member name="P:TuroApi.Models.Query.make">
+            <summary>Car make</summary>
+        </member>
+        <member name="P:TuroApi.Models.Query.model">
+            <summary>Car model</summary>
+        </member>
+    </members>
+</doc>
