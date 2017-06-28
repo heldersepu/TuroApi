@@ -6,13 +6,16 @@ namespace TuroApi.Models
     public class Query
     {
         /// <summary>SoFL= 26.16,-80.20</summary>
+        /// <example>26.16,-80.20</example>
         [Required()]
         public GeoPoint location { get; set; }
 
         /// <summary>Car make</summary>
-        public string make  { get; set; }
+        /// <example>Tesla</example>
+        public string make { get; set; }
 
         /// <summary>Car model</summary>
-        public string model  { get; set; }
+        /// <example>Model S</example>
+        public string model { get; set; }
     }
 }

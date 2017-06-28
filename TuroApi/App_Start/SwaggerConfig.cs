@@ -101,7 +101,7 @@ namespace TuroApi
                         // those comments into the generated docs and UI. You can enable this by providing the path to one or
                         // more Xml comment files.
                         //
-                        c.IncludeXmlComments(embeddedXmlComments);
+                        //c.IncludeXmlComments(embeddedXmlComments);
 
                         // Swashbuckle makes a best attempt at generating Swagger compliant JSON schemas for the various types
                         // exposed in your API. However, there may be occasions when more control of the output is needed.
@@ -119,7 +119,7 @@ namespace TuroApi
                         // If you want to post-modify "complex" Schemas once they've been generated, across the board or for a
                         // specific type, you can wire up one or more Schema filters.
                         //
-                        c.SchemaFilter<ApplySchemaVendorExtensions>();
+                        //c.SchemaFilter<ApplySchemaVendorExtensions>();
 
                         // In a Swagger 2.0 document, complex types are typically declared globally and referenced by unique
                         // Schema Id. By default, Swashbuckle does NOT use the full type name in Schema Ids. In most cases, this
@@ -245,39 +245,6 @@ namespace TuroApi
                         //
                         //c.EnableApiKeySupport("apiKey", "header");
                     });
-        }
-
-        private static XPathDocument embeddedXmlComments()
-        {
-            return new XPathDocument(ThisAssembly.GetManifestResourceStream("TuroApi.TuroApi.XML"));
-        }
-
-        private class ApplySchemaVendorExtensions : ISchemaFilter
-        {
-            public void Apply(Schema schema, SchemaRegistry schemaRegistry, Type type)
-            {
-                if (schema.properties != null)
-                {
-                    foreach (var p in schema.properties)
-                    {
-                        if (p.Value.@type == "string")
-                        {
-                            switch (p.Key)
-                            {
-                                case "make":
-                                    p.Value.example = "Tesla";
-                                    break;
-                                case "model":
-                                    p.Value.example = "Model S";
-                                    break;
-                                case "location":
-                                    p.Value.example = "26.16,-80.20";
-                                    break;
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 }
