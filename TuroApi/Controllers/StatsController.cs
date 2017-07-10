@@ -2,7 +2,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Swashbuckle.Swagger.Annotations;
+using Swagger.Net.Annotations;
 using TuroApi.Models;
 
 namespace TuroApi.Controllers

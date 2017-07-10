@@ -6,8 +6,8 @@ using System.Web.Http.Routing.Constraints;
 
 using WebActivatorEx;
 using TuroApi;
-using Swashbuckle.Application;
-using Swashbuckle.Swagger;
+using Swagger.Net.Application;
+using Swagger.Net;
 
 [assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
