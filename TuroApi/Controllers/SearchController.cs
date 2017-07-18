@@ -1,9 +1,9 @@
-﻿using System.Linq;
+﻿using Swagger.Net.Annotations;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.Web.Http;
-using Swagger.Net.Annotations;
 using TuroApi.Models;
 
 namespace TuroApi.Controllers

@@ -1,11 +1,11 @@
-﻿using RestSharp;
+﻿using Newtonsoft.Json;
+using RestSharp;
 using System;
-using System.Web.Http;
-using Newtonsoft.Json;
-using TuroApi.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Http;
+using TuroApi.Models;
 
 namespace TuroApi.Controllers
 {
