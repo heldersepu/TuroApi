@@ -4,6 +4,13 @@
         <name>TuroApi</name>
     </assembly>
     <members>
+        <member name="M:TuroApi.Controllers.EchoController.Get(TuroApi.Models.GeoPoint)">
+            <summary>
+            Echo test for the location
+            </summary>
+            <param name="location">SoFL= 26.16,-80.20</param>
+            <returns>String with Latitude and Longitude</returns>
+        </member>
         <member name="M:TuroApi.Controllers.SearchController.GetByLocation(TuroApi.Models.Query)">
             <summary>
             Get all cars in a given location
