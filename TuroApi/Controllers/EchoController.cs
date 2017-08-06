@@ -1,4 +1,7 @@
-﻿using System.Web.Http;
+﻿using Swagger.Net.Annotations;
+using System.Net;
+using System.Web.Http;
+using System.Web.Http.Results;
 using TuroApi.Models;
 
 namespace TuroApi.Controllers
@@ -11,9 +14,13 @@ namespace TuroApi.Controllers
         /// </summary>
         /// <param name="location">SoFL= 26.16,-80.20</param>
         /// <returns>String with Latitude and Longitude</returns>
-        public string Get(GeoPoint location)
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(string))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, Type = typeof(BadRequestErrorMessageResult))]
+        public IHttpActionResult Get(GeoPoint location)
         {
-            return $"Latitude={location.Latitude}, Longitude={location.Longitude}";
+            if (location == null)
+                return BadRequest("Invalid location.");
+            return Ok($"Latitude={location.Latitude}, Longitude={location.Longitude}");
         }
     }
 }
