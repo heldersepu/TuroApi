@@ -32,12 +32,16 @@ namespace TuroApi.Models
                 return false;
             }
 
-            double latitude, longitude;
-            if (double.TryParse(parts[0], out latitude) &&
-                double.TryParse(parts[1], out longitude))
+            double lat, lon;
+            if (double.TryParse(parts[0], out lat) &&
+                double.TryParse(parts[1], out lon))
             {
-                result = new GeoPoint() { Longitude = longitude, Latitude = latitude };
-                return true;
+                if (lat <= 90 && lat >= -90 &&
+                    lon <= 180 && lon >= -180)
+                {
+                    result = new GeoPoint(lat, lon);
+                    return true;
+                }
             }
             return false;
         }
