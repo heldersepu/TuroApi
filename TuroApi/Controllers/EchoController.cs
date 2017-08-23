@@ -22,5 +22,11 @@ namespace TuroApi.Controllers
                 return BadRequest("Invalid location.");
             return Ok($"Latitude={location.Latitude}, Longitude={location.Longitude}");
         }
+
+        [KeyAuthorize]
+        public IHttpActionResult Post()
+        {
+            return Ok("Testing API Key Authentication in header");
+        }
     }
 }
