@@ -8,6 +8,7 @@ using WebActivatorEx;
 using TuroApi;
 using Swagger.Net.Application;
 using Swagger.Net;
+using System.Collections.Generic;
 
 [assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
@@ -168,7 +169,7 @@ namespace TuroApi
                         // to inspect some attribute on each action and infer which (if any) OAuth2 scopes are required
                         // to execute the operation
                         //
-                        //c.OperationFilter<AssignOAuth2SecurityRequirements>();
+                        c.OperationFilter<AssignApiKeySecurityRequirements>();
 
                         // Post-modify the entire Swagger document by wiring up one or more Document filters.
                         // This gives full control to modify the final SwaggerDocument. You should have a good understanding of
@@ -262,6 +263,31 @@ namespace TuroApi
                         //
                         c.EnableApiKeySupport("apiKey", "header");
                     });
+        }
+
+        public class AssignApiKeySecurityRequirements : IOperationFilter
+        {
+            public void Apply(Operation operation, SchemaRegistry schemaRegistry, ApiDescription apiDescription)
+            {
+                var scopes = apiDescription.ActionDescriptor.GetFilterPipeline()
+                        .Select(filterInfo => filterInfo.Instance)
+                        .OfType<KeyAuthorizeAttribute>()
+                        .SelectMany(attr => attr.Roles.Split(','))
+                        .Distinct();
+
+                if (scopes.Any())
+                {
+                    if (operation.security == null)
+                        operation.security = new List<IDictionary<string, IEnumerable<string>>>();
+
+                    var SecRequirements = new Dictionary<string, IEnumerable<string>>
+                    {
+                        { "apiKey", new List<string>() }
+                    };
+
+                    operation.security.Add(SecRequirements);
+                }
+            }
         }
 
         private class ApplyDocumentVendorExtensions : IDocumentFilter
