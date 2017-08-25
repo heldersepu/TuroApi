@@ -267,9 +267,10 @@ namespace TuroApi
 
         public class AssignApiKeySecurityRequirements : IOperationFilter
         {
-            public void Apply(Operation operation, SchemaRegistry schemaRegistry, ApiDescription apiDescription)
+            const string API_KEY = "apiKey";
+            public void Apply(Operation o, SchemaRegistry s, ApiDescription a)
             {
-                var scopes = apiDescription.ActionDescriptor.GetFilterPipeline()
+                var scopes = a.ActionDescriptor.GetFilterPipeline()
                         .Select(filterInfo => filterInfo.Instance)
                         .OfType<KeyAuthorizeAttribute>()
                         .SelectMany(attr => attr.Roles.Split(','))
@@ -277,15 +278,16 @@ namespace TuroApi
 
                 if (scopes.Any())
                 {
-                    if (operation.security == null)
-                        operation.security = new List<IDictionary<string, IEnumerable<string>>>();
+                    if (o.security == null)
+                        o.security = new List<IDictionary<string, IEnumerable<string>>>();
+                    else if (o.security.Any(x => x.ContainsKey(API_KEY)))
+                        return;
 
                     var SecRequirements = new Dictionary<string, IEnumerable<string>>
                     {
-                        { "apiKey", new List<string>() }
+                        { API_KEY, new List<string>() }
                     };
-
-                    operation.security.Add(SecRequirements);
+                    o.security.Add(SecRequirements);
                 }
             }
         }
