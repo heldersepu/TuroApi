@@ -272,8 +272,7 @@ namespace TuroApi
             {
                 var scopes = a.ActionDescriptor.GetFilterPipeline()
                         .Select(filterInfo => filterInfo.Instance)
-                        .OfType<KeyAuthorizeAttribute>()
-                        .SelectMany(attr => attr.Roles.Split(','))
+                        .Where(x => x.GetType() == typeof(KeyAuthorizeAttribute))
                         .Distinct();
 
                 if (scopes.Any())
