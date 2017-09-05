@@ -1,14 +1,10 @@
+using Swagger.Net;
+using Swagger.Net.Application;
 using System;
-using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
-using System.Web.Http.Routing.Constraints;
-
-using WebActivatorEx;
 using TuroApi;
-using Swagger.Net.Application;
-using Swagger.Net;
-using System.Collections.Generic;
+using WebActivatorEx;
 
 [assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
@@ -68,11 +64,7 @@ namespace TuroApi
                         //c.BasicAuth("basic")
                         //    .Description("Basic HTTP Authentication");
                         //
-						// NOTE: You must also configure 'EnableApiKeySupport' below in the SwaggerUI section
-                        c.ApiKey("apiKey")
-                            .Description("API Key Authentication")
-                            .Name("apiKey")
-                            .In("header");
+                        c.ApiKey("apiKey", "header", "API Key Authentication", typeof(KeyAuthorizeAttribute));
                         //
                         //c.OAuth2("oauth2")
                         //    .Description("OAuth2 Implicit Grant")
@@ -88,7 +80,7 @@ namespace TuroApi
                         // Set this flag to omit descriptions for any actions decorated with the Obsolete attribute
                         //c.IgnoreObsoleteActions();
 
-						// Comment this setting to disable Access-Control-Allow-Origin
+                        // Comment this setting to disable Access-Control-Allow-Origin
                         c.AccessControlAllowOrigin("*");
 
                         // Each operation be assigned one or more tags which are then used by consumers for various reasons.
@@ -114,7 +106,7 @@ namespace TuroApi
                         // more Xml comment files.
                         //
                         //c.IncludeXmlComments(AppDomain.CurrentDomain.BaseDirectory + "file.ext");
-						c.IncludeAllXmlComments(thisAssembly, AppDomain.CurrentDomain.BaseDirectory);
+                        c.IncludeAllXmlComments(thisAssembly, AppDomain.CurrentDomain.BaseDirectory);
 
                         // Swashbuckle makes a best attempt at generating Swagger compliant JSON schemas for the various types
                         // exposed in your API. However, there may be occasions when more control of the output is needed.
@@ -169,7 +161,7 @@ namespace TuroApi
                         // to inspect some attribute on each action and infer which (if any) OAuth2 scopes are required
                         // to execute the operation
                         //
-                        c.OperationFilter<AssignApiKeySecurityRequirements>();
+                        //c.OperationFilter<AssignApiKeySecurityRequirements>();
 
                         // Post-modify the entire Swagger document by wiring up one or more Document filters.
                         // This gives full control to modify the final SwaggerDocument. You should have a good understanding of
@@ -258,37 +250,7 @@ namespace TuroApi
                         //    //additionalQueryStringParams: new Dictionary<string, string>() { { "foo", "bar" } }
                         //);
 
-                        // If your API supports ApiKey, you can override the default values.
-                        // "apiKeyIn" can either be "query" or "header"
-                        //
-                        c.EnableApiKeySupport("apiKey", "header");
                     });
-        }
-
-        public class AssignApiKeySecurityRequirements : IOperationFilter
-        {
-            const string API_KEY = "apiKey";
-            public void Apply(Operation o, SchemaRegistry s, ApiDescription a)
-            {
-                var scopes = a.ActionDescriptor.GetFilterPipeline()
-                        .Select(filterInfo => filterInfo.Instance)
-                        .Where(x => x.GetType() == typeof(KeyAuthorizeAttribute))
-                        .Distinct();
-
-                if (scopes.Any())
-                {
-                    if (o.security == null)
-                        o.security = new List<IDictionary<string, IEnumerable<string>>>();
-                    else if (o.security.Any(x => x.ContainsKey(API_KEY)))
-                        return;
-
-                    var SecRequirements = new Dictionary<string, IEnumerable<string>>
-                    {
-                        { API_KEY, new List<string>() }
-                    };
-                    o.security.Add(SecRequirements);
-                }
-            }
         }
 
         private class ApplyDocumentVendorExtensions : IDocumentFilter
