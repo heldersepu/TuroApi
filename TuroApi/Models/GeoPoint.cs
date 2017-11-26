@@ -45,6 +45,11 @@ namespace TuroApi.Models
             }
             return false;
         }
+
+        public new string ToString()
+        {
+            return $"{Latitude},{Longitude}";
+        }
     }
 
     class GeoPointConverter : TypeConverter

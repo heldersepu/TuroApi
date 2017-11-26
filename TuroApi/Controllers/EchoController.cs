@@ -28,5 +28,10 @@ namespace TuroApi.Controllers
         {
             return Ok("Testing API Key Authentication in header");
         }
+
+        public string Put(GeoPoint location)
+        {
+            return  location.ToString();
+        }
     }
 }
